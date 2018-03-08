@@ -2,6 +2,7 @@ package dockerfile // import "github.com/docker/docker/builder/dockerfile"
 
 import (
 	"fmt"
+	"regexp"
 	"runtime"
 	"testing"
 
@@ -22,7 +23,7 @@ func TestEmptyDockerfile(t *testing.T) {
 
 	createTestTempFile(t, contextDir, builder.DefaultDockerfileName, "", 0777)
 
-	readAndCheckDockerfile(t, "emptyDockerfile", contextDir, "", "the Dockerfile (Dockerfile) cannot be empty")
+	readAndCheckDockerfile(t, "emptyDockerfile", contextDir, "", `the Dockerfile \(Dockerfile\) cannot be empty`)
 }
 
 func TestSymlinkDockerfile(t *testing.T) {
@@ -45,6 +46,9 @@ func TestDockerfileOutsideTheBuildContext(t *testing.T) {
 	defer cleanup()
 
 	expectedError := "Forbidden path outside the build context: ../../Dockerfile ()"
+	if runtime.GOOS == "windows" {
+		expectedError = "failed to resolve scoped path ../../"
+	}
 
 	readAndCheckDockerfile(t, "DockerfileOutsideTheBuildContext", contextDir, "../../Dockerfile", expectedError)
 }
@@ -77,7 +81,7 @@ func readAndCheckDockerfile(t *testing.T, testName, contextDir, dockerfilePath, 
 		Source:  tarStream,
 	}
 	_, _, err = remotecontext.Detect(config)
-	assert.EqualError(t, err, expectedError)
+	assert.Regexp(t, regexp.MustCompile(expectedError), err.Error())
 }
 
 func TestCopyRunConfig(t *testing.T) {

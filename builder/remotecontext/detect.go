@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"runtime"
 	"strings"
 
 	"github.com/containerd/continuity/driver"
@@ -174,6 +175,10 @@ func StatAt(remote builder.Source, path string) (os.FileInfo, error) {
 func FullPath(remote builder.Source, path string) (string, error) {
 	fullPath, err := remote.Root().ResolveScopedPath(path, true)
 	if err != nil {
+		// No back-compat necessary on Windows. Also, for LCOW, as this is remoted to a utility VM, there may be other legitimate failures. Don't drop them on the floor.
+		if runtime.GOOS == "windows" {
+			return "", fmt.Errorf("failed to resolve scoped path %s: %s", path, err)
+		}
 		return "", fmt.Errorf("Forbidden path outside the build context: %s (%s)", path, fullPath) // backwards compat with old error
 	}
 	return fullPath, nil
