@@ -177,7 +177,10 @@ func (c *client) createWindows(id string, spec *specs.Spec, runtimeOptions inter
 
 	if spec.Windows.Resources != nil {
 		if spec.Windows.Resources.CPU != nil {
-			if schema == 2 {
+			if schema == 2 &&
+				(spec.Windows.Resources.CPU.Count != nil ||
+					spec.Windows.Resources.CPU.Shares != nil ||
+					spec.Windows.Resources.CPU.Maximum != nil) {
 				computeSystemV2.Container.Processor = &hcsshim.ContainersResourcesProcessorV2{}
 			}
 			if spec.Windows.Resources.CPU.Count != nil {
@@ -267,7 +270,7 @@ func (c *client) createWindows(id string, spec *specs.Spec, runtimeOptions inter
 				NetworkSharedContainerName: spec.Windows.Network.NetworkSharedContainerName,
 				NetworkAdapters:            spec.Windows.Network.EndpointList,
 			}
-			if spec.Windows.Network.DNSSearchList != nil {
+			if len(spec.Windows.Network.DNSSearchList) > 0 {
 				computeSystemV2.Container.Networking.DNSSearchList = strings.Join(spec.Windows.Network.DNSSearchList, ",")
 			}
 		}
