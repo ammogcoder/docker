@@ -155,11 +155,11 @@ func CreateContainerWithJSON(id string, c *ContainerConfig, additionalJSON strin
 
 // CreateContainerV2 creates a new container with the given configuration but does not start it.
 // Additional JSON is optional and merged before passing to HCS. This is a v2 schema call
-func CreateContainerV2(id string, c *ContainerConfigV2, additionalJSON string) (Container, error) {
+func CreateContainerV2(id string, c *ComputeSystemV2, additionalJSON string) (Container, error) {
 	return createContainerWithJSON(id, nil, c, additionalJSON)
 }
 
-func createContainerWithJSON(id string, cV1 *ContainerConfig, cV2 *ContainerConfigV2, additionalJSON string) (Container, error) {
+func createContainerWithJSON(id string, cV1 *ContainerConfig, cV2 *ComputeSystemV2, additionalJSON string) (Container, error) {
 	operation := "CreateContainer"
 	title := "HCSShim::" + operation
 

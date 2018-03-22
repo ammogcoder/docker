@@ -129,3 +129,18 @@ type ContainerConfigV2 struct {
 	HvSocket          *ContainersResourcesHvSocketV2         `json:"HvSocket,omitempty"`
 	RegistryChanges   *RegistryChangesV2                     `json:"RegistryChanges,omitempty"`
 }
+
+type SchemaVersionV2 struct {
+	Major int32 `json:"Major,omitempty"`
+	Minor int32 `json:"Minor,omitempty"`
+}
+
+type ComputeSystemV2 struct {
+	Owner         string           `json:"Owner,omitempty"`
+	SchemaVersion *SchemaVersionV2 `json:"SchemaVersion,omitempty"`
+	//HostingSystemId string `json:"HostingSystemId,omitempty"`
+	//HostedSystem *SchemaHostedSystem `json:"HostedSystem,omitempty"`
+	Container *ContainerConfigV2 `json:"Container,omitempty"`
+	//VirtualMachine *SchemaVirtualMachine `json:"VirtualMachine,omitempty"`
+	ShouldTerminateOnLastHandleClosed bool `json:"ShouldTerminateOnLastHandleClosed,omitempty"`
+}
